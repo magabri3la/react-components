@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "@yelysei/react-files-drag-and-drop": "^1.0.0",
+    "axios": "^1.2.5",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "sass": "^1.57.1",
+    "styled-components": "^5.3.6"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
