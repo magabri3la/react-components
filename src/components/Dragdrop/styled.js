@@ -3,7 +3,7 @@ import { COLORS } from "../../commons/colors";
 
 export const ContainerDropzone = styled.div`
   width: ${(props) => props.width || "545px"};
-  // height: ${(props) => props.height || "192px"};
+  height: ${(props) => props.height || "192px"};
   border: 2px dashed ${COLORS.NEUTRALS_800};
   border-radius: 20px;
   margin: ${(props) => props.margin || "unset"};

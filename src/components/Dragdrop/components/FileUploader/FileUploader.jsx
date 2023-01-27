@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   FileData,
   InputFile,
@@ -7,6 +7,8 @@ import {
 import { TextStyle } from '../../../../commons/styled';
 import { COLORS } from "../../../../commons/colors";
 import { useUploadFile } from '../../hooks/useUploadFile';
+import IconUploadFile from '../../../../assets/icon_upload_file.svg';
+import IconUploadDisabled from '../../../../assets/icon_upload_file.svg';
 
 function FileUploader ({
   formats,
@@ -14,18 +16,20 @@ function FileUploader ({
   maxFilesAllowed,
   onUpload,
   multiple,
-  files,
   disabled,
-  icon,
-  iconDisabled,
+  files
 }) {
-
+  // const [disabled, setDisabled] = useState(false);
   const { uploadForm, isSuccess, progress } = 
   useUploadFile('https://run.mocky.io/v3/bbe46e46-f0b1-4ec3-82f2-8192979692af');
 
   function getFormatsAllowed (formats) {
     return formats.map((format) => `.${format}`).toString()
   }; 
+
+  function validateMaximumFiles (arrayFiles) {
+    return (arrayFiles.length + 1) >= maxFilesAllowed;
+  }
 
   function validateMaximumFileSize (file) {
     let maximum = maxSizeAllowed * 1024 * 1024;
@@ -36,10 +40,13 @@ function FileUploader ({
     return arrayFiles.findIndex((f) => f.name === file.name) === -1;
   }
 
-  function onUploadFiles (newFilesSelected) {
+  function onUploadFiles (file) {
     onUpload((prevFiles) => {
-      if(newFilesSelected.length >= maxFilesAllowed) return prevFiles;
-      return [...newFilesSelected]
+      if(validateMaximumFiles(prevFiles)) {
+        // setDisabled(true)
+        return prevFiles;
+      }
+      return [...prevFiles, file]
     })
   };
 
@@ -52,31 +59,24 @@ function FileUploader ({
     
     if (chosenFiles.length > maxFilesAllowed) return;
 
-    chosenFiles.some(async (file) => {
-
+    for (let file of chosenFiles) {
       if (validateMaximumFileSize(file) && validateNoRepeatedFiles(uploadedFiles, file)) {
-    
-          let data = new FormData();
-          data.append('file', file)
+        let data = new FormData();
+        data.append('file', file);
 
-          const resp = await uploadForm(data);
-          console.log('desde uploader', resp);
+        const resp = await uploadForm(data);
 
-          if(resp?.status === 200) {
-            console.log(200)
-            uploadedFiles.push(file)
-          }
-          else {
-            console.log('kha')
+        if(resp?.status === 200) {
+          onUploadFiles(file);
+        }
+        else {
+          console.log('kha')
         }
       }
       else {
-        console.log(`${file.name} is too large, please pick a smaller file`)
+        console.log('Supera el peso maximo o es un documento repetido');
       }
-    });
-    console.log(uploadedFiles);
-
-    onUploadFiles(uploadedFiles);
+    }
   };
 
   const chosenFilesRef = useRef();
@@ -84,7 +84,7 @@ function FileUploader ({
   return (
     <>
         <FileData>
-          {disabled ? <img src={iconDisabled} /> : <img src={icon} />}
+          {disabled ? <img src={"IconUploadDisabled"} /> : <img src={IconUploadFile} />}
           <TextStyle
             color={disabled ? COLORS.NEUTRALS_500 : COLORS.NEUTRALS_700}
             size="16"
@@ -118,12 +118,10 @@ function FileUploader ({
           onChange={(event)=> handleUploadFiles(event)}
           ref={chosenFilesRef}
           // onChange={onChangeFile}
-          // onDrop={() => setIsOver(false)}
-          // onDragEnter={() => setIsOver(true)}
-          // onDragLeave={() => setIsOver(false)}
-          // accept={typeFile}
-          // value=""
-          // disabled={disabled}
+          onDrop={() => setIsOver(false)}
+          onDragEnter={() => setIsOver(true)}
+          onDragLeave={() => setIsOver(false)}
+          disabled={disabled}
         />
     </>
   )

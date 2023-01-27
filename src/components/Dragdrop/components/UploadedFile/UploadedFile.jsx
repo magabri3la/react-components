@@ -67,7 +67,7 @@ function UploadedFile ({
       )}
       {uploaded && (
         <>
-          <div>
+          <div style={{ display: "flex", alignItems: "flex-start"}}>
             <img src={IconDocument} />
             <FileData>
               <TextStyle 

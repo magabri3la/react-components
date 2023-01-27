@@ -3,11 +3,10 @@ import { DisclaimerWeb } from '../../../components/DisclaimerWeb';
 import { DragAndDropZone, Lista, TextStyle } from "../styled";
 import { COLORS } from '../../../commons/colors';
 import { Dragdrop } from '../../../components/Dragdrop';
-import IconUploadFile from '../../../assets/icon_upload_file.svg';
-import IconUploadDisabled from '../../../assets/icon_upload_file.svg';
 
 function UploadInvoice () {
-  const [files, setFiles] = React.useState([]);
+  const [uploadedFiles, setUploadedFiles] = React.useState([]);
+
   return (
     <>
       <TextStyle
@@ -90,24 +89,18 @@ function UploadInvoice () {
           HiddenPaddingText
           paddingRight
         >
-          Archivos:
+          Archivos: {uploadedFiles.length}
         </TextStyle>
         <Dragdrop
-          icon={IconUploadFile}
-          disabled={files.length === 10}
-          iconDisabled={IconUploadDisabled}
-          widthIcon="48px"
-          heightIcon="48px"
-          margin="24px 0px"
-          text={"Formato permitido XML"}
-          typeFile="text/xml"
-          multiple={false}
-          getFiles={(file) => setFiles([...files, file])}
-          maxQuantityFiles={10}
-          maxSizeFile={10000}
+          multiple={true}
+          maxSizeAllowed={10}
+          maxFilesAllowed={10}
+          uploadedFiles={uploadedFiles}
+          setUploadedFiles={setUploadedFiles}
+          formats={['pdf', 'xml', 'sql']}
+          disabled={uploadedFiles.length >= 10}
           messageMaxSizeFile="El archivo no cargó porque excede la capacidad máxima (10 MB)."
           messageMaxQuantityFiles="Has alcanzado el máximo de archivos permitidos. Para agregar uno nuevo, elimina alguno de los cargados."
-          files={files}
         />
       </DragAndDropZone>
     </>

@@ -13,25 +13,17 @@ import IconWarning from "../../assets/icon_warning-red.svg";
 import { useUploadFile } from './hooks/useUploadFile';
 
 function Dragdrop ({
-  width,
-  height,
-  icon,
-  iconDisabled,
-  disabled,
-  text,
-  widthIcon,
-  heightIcon,
-  margin,
-  typeFile,
-  multiple,
-  getFiles,
-  maxQuantityFiles = 100,
-  maxSizeFile = 10000, // en kilobytes
   messageMaxSizeFile,
   messageMaxQuantityFiles,
-  files,
+  disabled,
+  formats,
+  multiple,
+  uploadedFiles, 
+  setUploadedFiles,
+  maxSizeAllowed,
+  maxFilesAllowed
 }) {
-  const [uploadedFiles, setUploadedFiles] = React.useState([]);
+  // const [uploadedFiles, setUploadedFiles] = React.useState([]);
   const [isOver, setIsOver] = React.useState(false);
   const [showErrorSize, setShowErrorSize] = React.useState(false);
   const [uploadPercentage, setUploadPercentage] = React.useState(0);
@@ -59,29 +51,26 @@ function Dragdrop ({
   return (
     <>
       <ContainerDropzone
-        width={width}
-        height={height}
-        widthIcon={widthIcon}
-        heightIcon={heightIcon}
-        margin={margin}
+        widthIcon={"48px"}
+        heightIcon={"48px"}
+        margin={"24px 0px"}
         isOver={isOver}
         disabled={disabled}
         padding="32px"
       >
-        <FileUploader 
-          onUpload={setUploadedFiles}
-          formats={['pdf', 'xml', 'sql']}
-          maxSizeAllowed={10}
-          maxFilesAllowed={10}
+        <FileUploader
+          disabled={disabled}
+          multiple={multiple}
+          maxSizeAllowed={maxSizeAllowed}
+          maxFilesAllowed={maxFilesAllowed}
           files={uploadedFiles}
-          multiple
-          icon={icon}
-          iconDisabled={iconDisabled}
+          onUpload={setUploadedFiles}
+          formats={formats}
         />
       </ContainerDropzone>
 
       <Errors>
-        {files.length === maxQuantityFiles && (
+        {uploadedFiles.length === maxFilesAllowed && (
           <ContainerMessageError>
             <img src={IconWarning} alt="warning" />
             <TextStyle
@@ -109,7 +98,7 @@ function Dragdrop ({
           </ContainerMessageError>
         )}
       </Errors>
-
+      
       {uploadedFiles.length > 0 && uploadedFiles.map((file, index) => (
         <UploadedFile
           uploaded={false}
